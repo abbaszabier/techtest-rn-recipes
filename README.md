@@ -1,5 +1,11 @@
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
+#### Demo Login via Google:
+https://drive.google.com/file/d/1ATQNr71i4_fatSffpEexBTn7jNJR1TYH/view?usp=drive_link
+
+#### Demo Login via Email:
+https://drive.google.com/file/d/1qg6Hzr8YgDQfiCwmPo8Mbx6zzTUu8EIa/view?usp=drive_link
+
 # Getting Started
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
