@@ -38,8 +38,9 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
+    backgroundColor: '#fff',
     borderRadius: 8,
-    padding: 12,
+    padding: 14,
   },
   inputFocused: {
     borderColor: '#007bff',

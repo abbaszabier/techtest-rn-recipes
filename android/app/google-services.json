@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "655305746535",
+    "project_id": "rn-recipes-365d5",
+    "storage_bucket": "rn-recipes-365d5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655305746535:android:ae581ffe72afdcb832ccc2",
+        "android_client_info": {
+          "package_name": "com.rnrecipes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxmDCYu-AXuF4YE2-QWNlHqEMR9asdAsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

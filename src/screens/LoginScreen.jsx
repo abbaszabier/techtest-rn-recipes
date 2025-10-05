@@ -1,10 +1,17 @@
-import { useState } from 'react';
-import { View, Text, Alert, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { generateToken, validateEmail, validatePassword } from '../utils/auth';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+} from '@react-native-google-signin/google-signin';
+import { GOOGLE_WEB_CLIENT_ID } from '@env';
+
+import { showToast } from '../utils/toast';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -32,10 +39,33 @@ const LoginScreen = ({ navigation }) => {
       await AsyncStorage.setItem('authToken', token);
       await AsyncStorage.setItem('userName', email.split('@')[0]);
       navigation.replace('Home');
+      showToast('Login berhasil!');
     } catch (error) {
       Alert.alert('Error', 'Login gagal');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+
+      await AsyncStorage.setItem(
+        'authToken',
+        JSON.stringify({
+          token: userInfo.idToken,
+          expiry: Date.now() + 24 * 60 * 60 * 1000, // expired 1 jam
+        }),
+      );
+      await AsyncStorage.setItem('userName', userInfo.data.user.name);
+
+      navigation.replace('Home');
+      showToast('Login berhasil!');
+    } catch (error) {
+      console.error('Google login error:', error);
+      Alert.alert('Error', 'Login Google gagal');
     }
   };
 
@@ -53,45 +83,92 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: GOOGLE_WEB_CLIENT_ID,
+      offlineAccess: true,
+    });
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.title}>Login</Text>
+        <Text style={styles.title}>Welcome Back!</Text>
+        <Text style={styles.subtitle}>Login to your account</Text>
 
-        <Input
-          placeholder="Email"
-          value={email}
-          onChangeText={handleEmailChange}
-          error={errors.email}
-        />
+        <View style={styles.card}>
+          <Input
+            placeholder="Email"
+            value={email}
+            onChangeText={handleEmailChange}
+            error={errors.email}
+          />
+          <Input
+            placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={handlePasswordChange}
+            error={errors.password}
+          />
 
-        <Input
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          onChangeText={handlePasswordChange}
-          error={errors.password}
-        />
+          <Button
+            title="Login"
+            onPress={handleLogin}
+            loading={loading}
+            disabled={loading}
+          />
 
-        <Button
-          title="Login"
-          onPress={handleLogin}
-          loading={loading}
-          disabled={loading}
-        />
+          <Text style={styles.orText}>OR</Text>
+
+          <View style={styles.containerButtonGoogle}>
+            <GoogleSigninButton
+              onPress={handleGoogleLogin}
+              size={GoogleSigninButton.Size.Icon}
+            />
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#fff' },
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
+  safeArea: { flex: 1, backgroundColor: '#f2f2f7' },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  containerButtonGoogle: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 24,
+  },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 20,
+    color: '#111',
     textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+
+  orText: {
+    textAlign: 'center',
+    marginVertical: 15,
+    color: '#666',
+    fontWeight: '600',
+  },
+  googleButton: {
+    width: '100%',
+    height: 48,
+    borderRadius: 12,
   },
 });
 

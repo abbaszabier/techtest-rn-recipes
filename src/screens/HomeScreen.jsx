@@ -3,10 +3,29 @@ import { View, Text, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/Button';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { showToast } from '../utils/toast';
 
 const HomeScreen = ({ navigation }) => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setLoading(true);
+      const isLogin = await GoogleSignin.hasPreviousSignIn();
+      if (isLogin) await GoogleSignin.signOut();
+
+      await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('userName');
+      navigation.replace('Login');
+      showToast('Logout berhasil');
+    } catch (error) {
+      Alert.alert('Error', 'Logout gagal');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -15,19 +34,6 @@ const HomeScreen = ({ navigation }) => {
     };
     loadData();
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      setLoading(true);
-      await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('userName');
-      navigation.replace('Login');
-    } catch (error) {
-      Alert.alert('Error', 'Logout gagal');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
