@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../components/Input';
@@ -10,14 +10,15 @@ import {
   GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
-
 import { showToast } from '../utils/toast';
+import { useTheme } from '@react-navigation/native';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const { colors } = useTheme();
 
   const handleLogin = async () => {
     let newErrors = {};
@@ -91,10 +92,16 @@ const LoginScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: colors.background }]}
+    >
       <View style={styles.container}>
-        <Text style={styles.title}>Welcome Back!</Text>
-        <Text style={styles.subtitle}>Login to your account</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          Welcome Back!
+        </Text>
+        <Text style={[styles.subtitle, { color: colors.text }]}>
+          Login to your account
+        </Text>
 
         <View style={styles.card}>
           <Input
@@ -118,7 +125,7 @@ const LoginScreen = ({ navigation }) => {
             disabled={loading}
           />
 
-          <Text style={styles.orText}>OR</Text>
+          <Text style={[styles.orText, { color: colors.text }]}>OR</Text>
 
           <View style={styles.containerButtonGoogle}>
             <GoogleSigninButton

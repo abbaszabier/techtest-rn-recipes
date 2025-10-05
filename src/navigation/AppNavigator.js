@@ -4,13 +4,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
+import RecipeDetailScreen from '../screens/RecipeDetailScreen';
 import { validateToken } from '../utils/auth';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { useThemeContext } from '../context/ThemeContext';
 
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
   const [initialRoute, setInitialRoute] = useState(null);
+  const { theme } = useThemeContext();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -37,7 +40,7 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={theme}>
       <Stack.Navigator initialRouteName={initialRoute}>
         <Stack.Screen
           name="Login"
@@ -48,6 +51,11 @@ const AppNavigator = () => {
           name="Home"
           component={HomeScreen}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RecipeDetail"
+          component={RecipeDetailScreen}
+          options={{ title: 'Recipe Detail' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

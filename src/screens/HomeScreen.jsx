@@ -1,14 +1,41 @@
-import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  Image,
+  Switch,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Button from '../components/Button';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import axios from 'axios';
+import Button from '../components/Button';
 import { showToast } from '../utils/toast';
+import { useThemeContext } from '../context/ThemeContext';
+import { useTheme } from '@react-navigation/native';
 
 const HomeScreen = ({ navigation }) => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [recipes, setRecipes] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [apiLoading, setApiLoading] = useState(false);
+  const { isDark, toggleTheme } = useThemeContext();
+  const { colors } = useTheme();
+
+  useEffect(() => {
+    const loadData = async () => {
+      const userName = await AsyncStorage.getItem('userName');
+      setName(userName || 'User');
+    };
+    loadData();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -27,25 +54,93 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    const loadData = async () => {
-      const userName = await AsyncStorage.getItem('userName');
-      setName(userName || 'User');
-    };
-    loadData();
+  const fetchRecipes = async () => {
+    try {
+      setApiLoading(true);
+      const response = await axios.get('https://dummyjson.com/recipes');
+      if (response.data && response.data.recipes) {
+        setRecipes(response.data.recipes);
+      } else {
+        setRecipes([]);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Gagal mengambil data recipes');
+      setRecipes([]);
+    } finally {
+      setApiLoading(false);
+    }
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchRecipes().finally(() => setRefreshing(false));
   }, []);
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Text style={styles.text}>Welcome {name} 👋</Text>
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
 
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={[
+        styles.itemContainer,
+        {
+          borderColor: colors.border,
+          backgroundColor: colors.card,
+        },
+      ]}
+      onPress={() => navigation.navigate('RecipeDetail', { recipe: item })}
+    >
+      <Image
+        source={{ uri: item.image }}
+        style={styles.itemImage}
+        resizeMode="cover"
+      />
+      <Text style={[styles.itemTitle, { color: colors.text }]}>
+        {item.name}
+      </Text>
+      <Text style={[styles.itemDesc, { color: colors.text }]} numberOfLines={2}>
+        {item.rating} ⭐
+      </Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: colors.background }]}
+    >
+      <View style={styles.container}>
+        <View style={styles.headerRow}>
+          <Text style={[styles.textWelcome, { color: colors.text }]}>
+            Welcome {name} 👋
+          </Text>
+          <Switch value={isDark} onValueChange={toggleTheme} />
+        </View>
         <Button
           title="Logout"
           onPress={handleLogout}
           loading={loading}
           disabled={loading}
+          containerStyle={styles.logoutButtonContainer}
         />
+
+        {apiLoading ? (
+          <ActivityIndicator size="large" color="#000" />
+        ) : recipes.length === 0 ? (
+          <Text style={[styles.emptyText, { backgroundColor: colors.text }]}>
+            Belum ada resep tersedia.
+          </Text>
+        ) : (
+          <FlatList
+            data={recipes}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderItem}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            contentContainerStyle={styles.flatListContent}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -53,12 +148,40 @@ const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#fff' },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
+  container: { flex: 1, padding: 20 },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
-  text: { fontSize: 20, marginBottom: 20, textAlign: 'center' },
+  textWelcome: {
+    fontSize: 20,
+    width: '80%',
+  },
+  text: {
+    fontSize: 20,
+  },
+  logoutButtonContainer: {
+    marginLeft: 20,
+  },
+  emptyText: { textAlign: 'center', marginTop: 20, fontSize: 16 },
+  itemContainer: {
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  itemTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 5 },
+  itemDesc: { fontSize: 14, color: '#555' },
+  flatListContent: { paddingBottom: 20 },
+  itemImage: {
+    width: '100%',
+    height: 150,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
 });
 
 export default HomeScreen;
