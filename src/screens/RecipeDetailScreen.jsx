@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 import { useTheme } from '@react-navigation/native';
+import RecipeCard from '../components/RecipeCard';
 
 const RecipeDetailScreen = ({ route }) => {
   const { recipe } = route.params;
@@ -10,24 +11,7 @@ const RecipeDetailScreen = ({ route }) => {
     <ScrollView
       style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <Image
-        source={{ uri: recipe.image }}
-        style={styles.image}
-        resizeMode="cover"
-      />
-      <Text style={[styles.title, { color: colors.text }]}>{recipe.name}</Text>
-
-      <View style={styles.infoRow}>
-        <Text style={[styles.infoText, { color: colors.text }]}>
-          Rating: {recipe.rating} ⭐
-        </Text>
-        <Text style={[styles.infoText, { color: colors.text }]}>
-          Calories: {recipe.caloriesPerServing}
-        </Text>
-        <Text style={[styles.infoText, { color: colors.text }]}>
-          Servings: {recipe.servings}
-        </Text>
-      </View>
+      <RecipeCard item={recipe} disabled />
 
       <Text style={[styles.sectionTitle, { color: colors.text }]}>
         Ingredients

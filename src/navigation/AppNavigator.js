@@ -8,15 +8,19 @@ import RecipeDetailScreen from '../screens/RecipeDetailScreen';
 import { validateToken } from '../utils/auth';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { useThemeContext } from '../context/ThemeContext';
+import SplashScreen from '../screens/SplashScreen';
 
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
   const [initialRoute, setInitialRoute] = useState(null);
+  const [showSplash, setShowSplash] = useState(true);
   const { theme } = useThemeContext();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const prepareApp = async () => {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       try {
         const tokenString = await AsyncStorage.getItem('authToken');
         if (tokenString && validateToken(tokenString)) {
@@ -27,9 +31,16 @@ const AppNavigator = () => {
       } catch (e) {
         setInitialRoute('Login');
       }
+
+      setShowSplash(false);
     };
-    checkAuth();
+
+    prepareApp();
   }, []);
+
+  if (showSplash) {
+    return <SplashScreen />;
+  }
 
   if (!initialRoute) {
     return (
@@ -42,6 +53,11 @@ const AppNavigator = () => {
   return (
     <NavigationContainer theme={theme}>
       <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Screen
+          name="Splash"
+          component={SplashScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Login"
           component={LoginScreen}

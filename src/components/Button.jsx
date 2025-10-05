@@ -17,7 +17,7 @@ const Button = ({ title, onPress, loading, disabled }) => {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator
-            color="#fff"
+            color="#ffffff"
             size="small"
             style={styles.activityIndicator}
           />

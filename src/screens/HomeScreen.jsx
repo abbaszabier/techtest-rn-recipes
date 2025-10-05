@@ -1,14 +1,12 @@
-import React, { useEffect, useState, useCallback, useContext } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   RefreshControl,
-  TouchableOpacity,
   ActivityIndicator,
   Alert,
-  Image,
   Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,6 +17,7 @@ import Button from '../components/Button';
 import { showToast } from '../utils/toast';
 import { useThemeContext } from '../context/ThemeContext';
 import { useTheme } from '@react-navigation/native';
+import RecipeCard from '../components/RecipeCard';
 
 const HomeScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -81,28 +80,10 @@ const HomeScreen = ({ navigation }) => {
   }, []);
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.itemContainer,
-        {
-          borderColor: colors.border,
-          backgroundColor: colors.card,
-        },
-      ]}
+    <RecipeCard
+      item={item}
       onPress={() => navigation.navigate('RecipeDetail', { recipe: item })}
-    >
-      <Image
-        source={{ uri: item.image }}
-        style={styles.itemImage}
-        resizeMode="cover"
-      />
-      <Text style={[styles.itemTitle, { color: colors.text }]}>
-        {item.name}
-      </Text>
-      <Text style={[styles.itemDesc, { color: colors.text }]} numberOfLines={2}>
-        {item.rating} ⭐
-      </Text>
-    </TouchableOpacity>
+    />
   );
 
   return (
@@ -171,6 +152,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
+    marginBottom: 10,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 10,
   },
   itemTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 5 },

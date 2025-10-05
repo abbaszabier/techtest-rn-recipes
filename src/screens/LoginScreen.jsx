@@ -87,6 +87,8 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     GoogleSignin.configure({
       webClientId: GOOGLE_WEB_CLIENT_ID,
+      iosClientId:
+        '436041962147-r5rq6mbkj1b5prg7d9fd0olk12o8iai1.apps.googleusercontent.com',
       offlineAccess: true,
     });
   }, []);
@@ -125,7 +127,11 @@ const LoginScreen = ({ navigation }) => {
             disabled={loading}
           />
 
-          <Text style={[styles.orText, { color: colors.text }]}>OR</Text>
+          <View style={styles.orContainer}>
+            <View style={styles.line} />
+            <Text style={[styles.orText, { color: colors.text }]}>OR</Text>
+            <View style={styles.line} />
+          </View>
 
           <View style={styles.containerButtonGoogle}>
             <GoogleSigninButton
@@ -176,6 +182,17 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 48,
     borderRadius: 12,
+  },
+  orContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 0,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    margin: 8,
+    backgroundColor: '#ccc',
   },
 });
 
