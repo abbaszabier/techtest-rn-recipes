@@ -1,7 +1,15 @@
+import { Eye, EyeOff } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { TextInput, StyleSheet, View, Text } from 'react-native';
+import {
+  TextInput,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 
 const Input = ({
+  label,
   placeholder,
   value,
   onChangeText,
@@ -9,23 +17,45 @@ const Input = ({
   error,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  const isPasswordInput = secureTextEntry;
 
   return (
     <View style={styles.container}>
-      <TextInput
+      {label && <Text style={[styles.label]}>{label}</Text>}
+      <View
         style={[
-          styles.input,
+          styles.inputWrapper,
           isFocused && styles.inputFocused,
           error && styles.inputError,
         ]}
-        placeholder={placeholder}
-        value={value}
-        onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        autoCapitalize="none"
-      />
+      >
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          value={value}
+          onChangeText={onChangeText}
+          secureTextEntry={isPasswordInput && !isPasswordVisible}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          autoCapitalize="none"
+        />
+        {isPasswordInput && (
+          <TouchableOpacity onPress={togglePasswordVisibility}>
+            {isPasswordVisible ? (
+              <Eye size={20} color="#aaa" />
+            ) : (
+              <EyeOff size={20} color="#aaa" />
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
+
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
@@ -33,20 +63,33 @@ const Input = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 14,
+    marginBottom: 0,
   },
-  input: {
+  label: {
+    marginBottom: 4,
+    fontWeight: 500,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
     backgroundColor: '#fff',
     borderRadius: 8,
-    padding: 14,
+    paddingHorizontal: 14,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 14,
   },
   inputFocused: {
     borderColor: '#007bff',
   },
   inputError: {
     borderColor: 'red',
+  },
+  icon: {
+    marginLeft: 8,
   },
   error: {
     color: 'red',

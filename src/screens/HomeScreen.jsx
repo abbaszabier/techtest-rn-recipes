@@ -129,7 +129,12 @@ const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#fff' },
-  container: { flex: 1, padding: 20 },
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 0,
+  },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',

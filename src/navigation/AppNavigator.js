@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen';
-import HomeScreen from '../screens/HomeScreen';
+import TabsNavigator from '../navigation/TabsNavigator';
 import RecipeDetailScreen from '../screens/RecipeDetailScreen';
 import { validateToken } from '../utils/auth';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
@@ -24,7 +24,7 @@ const AppNavigator = () => {
       try {
         const tokenString = await AsyncStorage.getItem('authToken');
         if (tokenString && validateToken(tokenString)) {
-          setInitialRoute('Home');
+          setInitialRoute('MyTabs');
         } else {
           setInitialRoute('Login');
         }
@@ -64,8 +64,8 @@ const AppNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Home"
-          component={HomeScreen}
+          name="MyTabs"
+          component={TabsNavigator}
           options={{ headerShown: false }}
         />
         <Stack.Screen
