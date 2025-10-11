@@ -5,12 +5,12 @@ import {
   Bookmark,
   User,
   LayoutDashboard,
-  Newspaper,
   Plus,
+  TvMinimalPlay,
 } from 'lucide-react-native';
 import HomeScreen from '../screens/HomeScreen';
 import BookmarkScreen from '../screens/BookmarkScreen';
-import BlogScreen from '../screens/BlogScreen';
+import ReelsScreen from '../screens/ReelsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -25,8 +25,8 @@ const tabBarIcon = ({ route, focused }) => {
     case 'Bookmark':
       IconComponent = Bookmark;
       break;
-    case 'Blog':
-      IconComponent = Newspaper;
+    case 'Reels':
+      IconComponent = TvMinimalPlay;
       break;
     case 'Profile':
       IconComponent = User;
@@ -69,8 +69,8 @@ const TabsNavigator = () => {
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="Bookmark"
-        component={BookmarkScreen}
+        name="Reels"
+        component={ReelsScreen}
         options={{ headerShown: false }}
       />
       <Tab.Screen
@@ -82,8 +82,8 @@ const TabsNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Blog"
-        component={BlogScreen}
+        name="Bookmark"
+        component={BookmarkScreen}
         options={{ headerShown: false }}
       />
       <Tab.Screen
