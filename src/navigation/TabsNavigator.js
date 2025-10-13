@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
 import {
   Home,
   Bookmark,
@@ -7,11 +7,13 @@ import {
   LayoutDashboard,
   Plus,
   TvMinimalPlay,
+  ChevronLeft,
 } from 'lucide-react-native';
 import HomeScreen from '../screens/HomeScreen';
 import BookmarkScreen from '../screens/BookmarkScreen';
 import ReelsScreen from '../screens/ReelsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import AddRecipe from '../screens/AddRecipe';
 
 const Tab = createBottomTabNavigator();
 
@@ -44,9 +46,13 @@ const tabBarIcon = ({ route, focused }) => {
   );
 };
 
-const tabsIconAdd = () => {
+const tabsIconAdd = ({ navigations }) => {
   return (
-    <TouchableOpacity activeOpacity={0.8} style={styles.fabButton}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      style={styles.fabButton}
+      onPress={() => navigations.navigation.navigate('AddRecipe')}
+    >
       <Plus color="#fff" size={24} strokeWidth={2.5} />
     </TouchableOpacity>
   );
@@ -74,12 +80,29 @@ const TabsNavigator = () => {
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="Add"
-        component={HomeScreen}
-        options={{
-          tabBarLabel: '',
-          tabBarIcon: tabsIconAdd,
-        }}
+        name="AddRecipe"
+        component={AddRecipe}
+        options={({ navigation }) => ({
+          title: 'New Recipe',
+          tabBarButton: () => tabsIconAdd({ navigations: { navigation } }),
+          tabBarStyle: { display: 'none' },
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ marginLeft: 15 }}
+              onPress={() => navigation.goBack()}
+            >
+              <ChevronLeft opacity={0.9} size={24} strokeWidth={2} />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity style={{ marginRight: 15 }}>
+              <View style={styles.pill}>
+                <Text style={styles.pillText}>Send</Text>
+              </View>
+            </TouchableOpacity>
+          ),
+          headerTitleStyle: { marginBottom: 0 },
+        })}
       />
       <Tab.Screen
         name="Bookmark"
@@ -110,6 +133,13 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  pill: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 30,
+    backgroundColor: '#007bff',
+  },
+  pillText: { color: '#fff', fontWeight: '600' },
 });
 
 export default TabsNavigator;

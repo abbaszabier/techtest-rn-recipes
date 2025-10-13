@@ -18,6 +18,8 @@ import { showToast } from '../utils/toast';
 import { useThemeContext } from '../context/ThemeContext';
 import { useTheme } from '@react-navigation/native';
 import RecipeCard from '../components/RecipeCard';
+import { Bell } from 'lucide-react-native';
+import StoryList from '../components/StoryList';
 
 const HomeScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -36,22 +38,46 @@ const HomeScreen = ({ navigation }) => {
     loadData();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      setLoading(true);
-      const isLogin = await GoogleSignin.hasPreviousSignIn();
-      if (isLogin) await GoogleSignin.signOut();
+  const stories = [
+    { id: 1, name: 'Your story', avatar: 'https://github.com/shadcn.png' },
+    {
+      id: 2,
+      name: 'Lina',
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+    },
+    {
+      id: 3,
+      name: 'Rafi',
+      avatar: 'https://randomuser.me/api/portraits/men/45.jpg',
+    },
+    {
+      id: 4,
+      name: 'Sinta',
+      avatar: 'https://randomuser.me/api/portraits/women/46.jpg',
+    },
+    {
+      id: 5,
+      name: 'Dimas',
+      avatar: 'https://randomuser.me/api/portraits/men/47.jpg',
+    },
+  ];
 
-      await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('userName');
-      navigation.replace('Login');
-      showToast('Logout berhasil');
-    } catch (error) {
-      Alert.alert('Error', 'Logout gagal');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const isLogin = await GoogleSignin.hasPreviousSignIn();
+  //     if (isLogin) await GoogleSignin.signOut();
+
+  //     await AsyncStorage.removeItem('authToken');
+  //     await AsyncStorage.removeItem('userName');
+  //     navigation.replace('Login');
+  //     showToast('Logout berhasil');
+  //   } catch (error) {
+  //     Alert.alert('Error', 'Logout gagal');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const fetchRecipes = async () => {
     try {
@@ -91,19 +117,13 @@ const HomeScreen = ({ navigation }) => {
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
       <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <Text style={[styles.textWelcome, { color: colors.text }]}>
-            Welcome {name} 👋
-          </Text>
-          <Switch value={isDark} onValueChange={toggleTheme} />
-        </View>
-        <Button
+        {/* <Button
           title="Logout"
           onPress={handleLogout}
           loading={loading}
           disabled={loading}
           containerStyle={styles.logoutButtonContainer}
-        />
+        /> */}
 
         {apiLoading ? (
           <ActivityIndicator size="large" color="#000" />
@@ -112,15 +132,35 @@ const HomeScreen = ({ navigation }) => {
             Belum ada resep tersedia.
           </Text>
         ) : (
-          <FlatList
-            data={recipes}
-            keyExtractor={item => item.id.toString()}
-            renderItem={renderItem}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            contentContainerStyle={styles.flatListContent}
-          />
+          <>
+            <View style={styles.headerRow}>
+              <Text style={[styles.textWelcome, { color: colors.text }]}>
+                Recipes
+              </Text>
+              {/* <Switch value={isDark} onValueChange={toggleTheme} /> */}
+              <Bell size={24} color={colors.text} />
+            </View>
+            <FlatList
+              data={recipes}
+              keyExtractor={item => item.id.toString()}
+              renderItem={renderItem}
+              ListHeaderComponent={
+                <>
+                  <StoryList
+                    stories={stories}
+                    onPressStory={story =>
+                      console.log('Story clicked:', story.name)
+                    }
+                  />
+                </>
+              }
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+              contentContainerStyle={styles.flatListContent}
+              showsVerticalScrollIndicator={false}
+            />
+          </>
         )}
       </View>
     </SafeAreaView>
@@ -128,21 +168,22 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#fff' },
+  safeArea: { display: 'flex', backgroundColor: '#fff' },
   container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 0,
+    display: 'flex',
+    paddingHorizontal: 12,
+    paddingTop: 8,
   },
   headerRow: {
+    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 20,
   },
   textWelcome: {
-    fontSize: 20,
+    fontSize: 24,
+    fontWeight: '600',
     width: '80%',
   },
   text: {
@@ -159,6 +200,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
   },
+  flatListContent: {
+    paddingBottom: 80,
+  },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -166,7 +210,6 @@ const styles = StyleSheet.create({
   },
   itemTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 5 },
   itemDesc: { fontSize: 14, color: '#555' },
-  flatListContent: { paddingBottom: 20 },
   itemImage: {
     width: '100%',
     height: 150,
